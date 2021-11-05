@@ -143,6 +143,16 @@ impl<'a> Image<'a> {
     }
 
     #[inline(always)]
+    pub fn into_buffer(self) -> Vec<u8> {
+        match self.pixels {
+            PixelsContainer::MutU32(p) => unsafe { p.align_to::<u8>().1.to_vec() },
+            PixelsContainer::MutU8(p) => p.to_vec(),
+            PixelsContainer::VecU32(v) => unsafe { v.align_to::<u8>().1.to_vec() },
+            PixelsContainer::VecU8(v) => v,
+        }
+    }
+
+    #[inline(always)]
     fn buffer_mut(&mut self) -> &mut [u8] {
         match &mut self.pixels {
             PixelsContainer::MutU32(p) => unsafe { p.align_to_mut::<u8>().1 },
